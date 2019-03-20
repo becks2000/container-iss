@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+
+metadata: 
+  name: app-deploy
+  namespace: myspace
+  labels:
+    name: app-deploy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      xxx: xxx
+  template:
+    metadata:
+      name: myapp-pod
+      labels:
+        name: myapp-pod
+    spec:
+      containers:
+        name: myapp-container
+        image: stackupiss/northwind-app:v1
+        imagePullPolicy: IfNotPresent
+        ports:
+          containerPort: 3000
+        env:
+        - name: DB_HOST
+          value: mydb-svc.myspace.svc.cluster.local
+
+---
+
+apiVersion: v1
+kind: Service
+
+metadata:
+  name: myapp-svc
+  namespace: myspace
+  labels:
+    name: myapp-svc
+
+spec:
+  type: LoadBalancer
+  selector:
+    name: myapp-pod
+  ports:
+    - port: 80
+      targetPort: 8080
